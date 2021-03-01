@@ -1,4 +1,3 @@
-
 //Dependencies
 const mysql = require('mysql');
 const inquirer = require('inquirer');
@@ -7,14 +6,14 @@ const consoleTable = require('console.table');
 
 
 var connection = mysql.createConnection({
-    host:"localhost",
+    host: "localhost",
     port: 3306,
-    user:"root",
-    database:"employer_DB"
+    user: "root",
+    database: "employer_DB"
 })
 
-connection.connect(function(err){
-    console.log("Connected as id: "+connection.threadId);
+connection.connect(function (err) {
+    console.log("Connected as id: " + connection.threadId);
     start();
 })
 
@@ -65,14 +64,15 @@ function start() {
                 case "View  departments, roles, or employees":
                     inquirer
                         .prompt({
-                            name: "view",
                             type: "rawlist",
                             message: "What would you like to view?",
                             choices: [
                                 "View department",
                                 "View role",
                                 "View employee",
-                            ]
+                            ],
+                            name: "view",
+
                         })
                         .then(function (response) {
                             switch (response.view) {
@@ -131,15 +131,17 @@ function addDepartment() {
         .then(function (response) {
             var query = "INSERT INTO department SET ?";
             console.log(response.departmentAdd);
-            connection.query(query, { name: response.departmentAdd }, function (err, res) {
+            connection.query(query, {
+                name: response.departmentAdd
+            }, function (err, res) {
                 if (err) throw err;
 
                 //allow user to run another search if they want
                 inquirer.prompt({
-                    name: "returnToStart",
-                    type: "confirm",
-                    message: "Would you like to do another search?",
-                })
+                        name: "returnToStart",
+                        type: "confirm",
+                        message: "Would you like to do another search?",
+                    })
                     .then(function (response) {
                         if (response.returnToStart === true) {
                             start();
@@ -157,27 +159,28 @@ function addDepartment() {
 
 function addRole() {
     inquirer
-        .prompt([
-            {
-                name: "Title",
+        .prompt([{
                 type: "input",
                 message: "Please enter the name of the new role.",
+                name: "Title",
+
             },
             {
-                name: "Salary",
                 type: "input",
                 message: "Please enter the salary for the new role.",
+                name: "Salary",
+
             },
             {
-                name: "DeptId",
                 type: "input",
                 message: "Please enter the department ID for the new role.",
+                name: "DeptId",
+
             }
         ])
         .then(function (response) {
             var query = "INSERT INTO role SET ?";
-            connection.query(query,
-                {
+            connection.query(query, {
                     title: response.Title,
                     salary: response.Salary,
                     department_id: response.DeptId
@@ -186,12 +189,11 @@ function addRole() {
                     if (err) throw err;
                     console.log(res.affectedRows + " role added!")
 
-                    //allow user to run another search if they want
                     inquirer.prompt({
-                        name: "returnToStart",
-                        type: "confirm",
-                        message: "Would you like to do another search?",
-                    })
+                            name: "returnToStart",
+                            type: "confirm",
+                            message: "Would you like to do another search?",
+                        })
                         .then(function (response) {
                             if (response.returnToStart === true) {
                                 start();
@@ -207,32 +209,33 @@ function addRole() {
 
 function addEmployee() {
     inquirer
-        .prompt([
-            {
-                name: "first_name",
+        .prompt([{
                 type: "input",
                 message: "Please enter new employee's first name",
+                name: "first_name",
             },
             {
-                name: "last_name",
                 type: "input",
                 message: "Please enter new employee's last name",
+                name: "last_name",
+
             },
             {
-                name: "EmpRoleId",
                 type: "input",
                 message: "Please enter the role ID for the new role.",
+                name: "EmpRoleId",
+
             },
             {
-                name: "empManager",
                 type: "input",
                 message: "Please enter new employee's managers id (or NULL if no manager).",
+                name: "empManager",
+
             }
         ])
         .then(function (response) {
             var query = "INSERT INTO employee SET ?";
-            connection.query(query,
-                {
+            connection.query(query, {
                     first_name: response.first_name,
                     last_name: response.last_name,
                     role_id: response.EmpRoleId,
@@ -241,12 +244,11 @@ function addEmployee() {
                 function (err, res) {
                     if (err) throw err;
 
-                    //allow user to run another search if they want
                     inquirer.prompt({
-                        name: "returnToStart",
-                        type: "confirm",
-                        message: "Would you like to do another search?",
-                    })
+                            name: "returnToStart",
+                            type: "confirm",
+                            message: "Would you like to do another search?",
+                        })
                         .then(function (response) {
                             if (response.returnToStart === true) {
                                 start();
@@ -261,22 +263,23 @@ function addEmployee() {
 }
 
 function viewDepartment() {
-    //display all the departments
     var query = "SELECT id, name FROM department";
     connection.query(query, function (err, res) {
         var tableObj = [];
         for (var i = 0; i < res.length; i++) {
-            tableObj.push({ID: res[i].id, Name: res[i].name});
+            tableObj.push({
+                ID: res[i].id,
+                Name: res[i].name
+            });
         };
-        
+
         console.log(cTable.getTable(tableObj));
 
-        //allow user to run another search if they want
         inquirer.prompt({
-            name: "returnToStart",
-            type: "confirm",
-            message: "Would you like another search?",
-        })
+                name: "returnToStart",
+                type: "confirm",
+                message: "Would you like another search?",
+            })
             .then(function (response) {
                 if (response.returnToStart === true) {
                     start();
@@ -290,22 +293,25 @@ function viewDepartment() {
 }
 
 function viewRole() {
-    //display all the roles
     var query = "SELECT id, title, salary, department_id FROM role";
     connection.query(query, function (err, res) {
         var tableObj = [];
         for (var i = 0; i < res.length; i++) {
-            tableObj.push({ID: res[i].id, Title: res[i].title, Salary: res[i].salary, Department: res[i].department_id});
+            tableObj.push({
+                ID: res[i].id,
+                Title: res[i].title,
+                Salary: res[i].salary,
+                Department: res[i].department_id
+            });
         }
 
         console.log(cTable.getTable(tableObj));
 
-        //allow user to run another search if they want
         inquirer.prompt({
-            name: "returnToStart",
-            type: "confirm",
-            message: "Would you like another search?",
-        })
+                name: "returnToStart",
+                type: "confirm",
+                message: "Would you like another search?",
+            })
             .then(function (response) {
                 if (response.returnToStart === true) {
                     start();
@@ -319,22 +325,27 @@ function viewRole() {
 }
 
 function viewEmployee() {
-    //dispaly all the employees
+
     var query = "SELECT id, first_name, last_name, role_id, manager_id FROM employee";
-    tableObj =[];
+    tableObj = [];
     connection.query(query, function (err, res) {
         for (var i = 0; i < res.length; i++) {
-            tableObj.push({ID: res[i].id, First_name: res[i].first_name, Last_name: res[i].last_name, Role: res[i].role_id, Manager: res[i].manager_id});
+            tableObj.push({
+                ID: res[i].id,
+                First_name: res[i].first_name,
+                Last_name: res[i].last_name,
+                Role: res[i].role_id,
+                Manager: res[i].manager_id
+            });
         }
 
         console.log(cTable.getTable(tableObj));
 
-        //allow user to run another search if they want
         inquirer.prompt({
-            name: "returnToStart",
-            type: "confirm",
-            message: "Would you like another search?",
-        })
+                name: "returnToStart",
+                type: "confirm",
+                message: "Would you like another search?",
+            })
             .then(function (response) {
                 if (response.returnToStart === true) {
                     start();
@@ -349,8 +360,7 @@ function viewEmployee() {
 
 function updateDepartment() {
     inquirer
-        .prompt([
-            {
+        .prompt([{
                 name: "departmentUpdate",
                 type: "input",
                 message: "Please enter department you wish to update.",
@@ -364,8 +374,7 @@ function updateDepartment() {
         .then(function (response) {
             var query = "UPDATE department SET ? WHERE ?";
             console.log(response.departmentAdd);
-            connection.query(query, [
-                {
+            connection.query(query, [{
                     name: response.departmentNew
                 },
                 {
@@ -375,12 +384,11 @@ function updateDepartment() {
                 if (err) throw err;
                 console.log(res.affectedRows + " department updated!")
 
-                //allow user to run another search if they want
                 inquirer.prompt({
-                    name: "returnToStart",
-                    type: "confirm",
-                    message: "Would you like another search?",
-                })
+                        name: "returnToStart",
+                        type: "confirm",
+                        message: "Would you like another search?",
+                    })
                     .then(function (response) {
                         if (response.returnToStart === true) {
                             start();
@@ -396,8 +404,7 @@ function updateDepartment() {
 
 function updateRole() {
     inquirer
-        .prompt([
-            {
+        .prompt([{
                 name: "roleUpdate",
                 type: "input",
                 message: "Please enter the role you wish to update.",
@@ -419,8 +426,7 @@ function updateRole() {
             var query = "UPDATE role SET ? WHERE ?";
             switch (response.roleField) {
                 case "title":
-                    connection.query(query, [
-                        {
+                    connection.query(query, [{
                             title: response.roleNew
                         },
                         {
@@ -433,8 +439,7 @@ function updateRole() {
                     break;
 
                 case "salary":
-                    connection.query(query, [
-                        {
+                    connection.query(query, [{
                             salary: response.roleNew
                         },
                         {
@@ -447,8 +452,7 @@ function updateRole() {
                     break;
 
                 case "department_id":
-                    connection.query(query, [
-                        {
+                    connection.query(query, [{
                             department_id: response.roleNew
                         },
                         {
@@ -461,12 +465,11 @@ function updateRole() {
                     break;
             }
 
-            //allow user to run another search if they want
             inquirer.prompt({
-                name: "returnToStart",
-                type: "confirm",
-                message: "Would you like another search?",
-            })
+                    name: "returnToStart",
+                    type: "confirm",
+                    message: "Would you like another search?",
+                })
                 .then(function (response) {
                     if (response.returnToStart === true) {
                         start();
@@ -481,8 +484,7 @@ function updateRole() {
 
 function updateEmployee() {
     inquirer
-        .prompt([
-            {
+        .prompt([{
                 name: "employeeUpdate",
                 type: "input",
                 message: "Please enter the employee_id you wish to update.",
@@ -504,8 +506,7 @@ function updateEmployee() {
             var query = "UPDATE employee SET ? WHERE ?";
             switch (response.employeeField) {
                 case "first_name":
-                    connection.query(query, [
-                        {
+                    connection.query(query, [{
                             first_name: response.employeeNew
                         },
                         {
@@ -518,8 +519,7 @@ function updateEmployee() {
                     break;
 
                 case "last_name":
-                    connection.query(query, [
-                        {
+                    connection.query(query, [{
                             last_name: response.employeeNew
                         },
                         {
@@ -532,8 +532,7 @@ function updateEmployee() {
                     break;
 
                 case "role_id":
-                    connection.query(query, [
-                        {
+                    connection.query(query, [{
                             role_id: response.employeeNew
                         },
                         {
@@ -546,8 +545,7 @@ function updateEmployee() {
                     break;
 
                 case "manager_id":
-                    connection.query(query, [
-                        {
+                    connection.query(query, [{
                             manager_id: response.employeeNew
                         },
                         {
@@ -560,12 +558,11 @@ function updateEmployee() {
                     break;
             }
 
-            //allow user to run another search if they want
             inquirer.prompt({
-                name: "returnToStart",
-                type: "confirm",
-                message: "Would you like another search?",
-            })
+                    name: "returnToStart",
+                    type: "confirm",
+                    message: "Would you like another search?",
+                })
                 .then(function (response) {
                     if (response.returnToStart === true) {
                         start();
