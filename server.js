@@ -9,6 +9,8 @@ var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
+    password: 'HobGoblin93',
+
     database: "employer_DB"
 })
 
@@ -19,9 +21,8 @@ connection.connect(function (err) {
 
 
 
-function start() {
-    inquirer
-        .prompt({
+const start = function () {
+    inquirer.prompt({
             name: "start",
             type: "rawlist",
             message: "What would you like to do?",
@@ -158,8 +159,7 @@ function addDepartment() {
 
 
 function addRole() {
-    inquirer
-        .prompt([{
+    inquirer.prompt([{
                 type: "input",
                 message: "Please enter the name of the new role.",
                 name: "Title",
@@ -179,8 +179,7 @@ function addRole() {
             }
         ])
         .then(function (response) {
-            var query = "INSERT INTO role SET ?";
-            connection.query(query, {
+            connection.query("INSERT INTO role SET ?", {
                     title: response.Title,
                     salary: response.Salary,
                     department_id: response.DeptId
@@ -359,8 +358,7 @@ function viewEmployee() {
 }
 
 function updateDepartment() {
-    inquirer
-        .prompt([{
+    inquirer.prompt([{
                 name: "departmentUpdate",
                 type: "input",
                 message: "Please enter department you wish to update.",
@@ -403,8 +401,7 @@ function updateDepartment() {
 }
 
 function updateRole() {
-    inquirer
-        .prompt([{
+    inquirer.prompt([{
                 name: "roleUpdate",
                 type: "input",
                 message: "Please enter the role you wish to update.",
@@ -483,8 +480,7 @@ function updateRole() {
 }
 
 function updateEmployee() {
-    inquirer
-        .prompt([{
+    inquirer.prompt([{
                 name: "employeeUpdate",
                 type: "input",
                 message: "Please enter the employee_id you wish to update.",
