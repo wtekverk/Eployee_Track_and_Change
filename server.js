@@ -1,28 +1,33 @@
 //Dependencies
 const mysql = require('mysql');
 const inquirer = require('inquirer');
-const consoleTable = require('console.table');
 
 
-
+//connection information for MySQL
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
+
+    //your password here
     password: 'HobGoblin93',
 
+    //make sure to run the schema.sql in workbench
     database: "employer_DB"
 })
 
+//connection function for MySQL
 connection.connect(function (err) {
     console.log("Connected as id: " + connection.threadId);
     start();
 })
 
 
-
+//start function runs FIRST after node server.js
 const start = function () {
+    //connecting to inquirer 
     inquirer.prompt({
+            //first question
             name: "start",
             type: "rawlist",
             message: "What would you like to do?",
@@ -33,7 +38,9 @@ const start = function () {
             ]
         })
         .then(function (response) {
+            //once choice is picked which rout to take 
             switch (response.start) {
+                //if add is chosen 
                 case "Add departments, roles, or employees":
 
                     inquirer
@@ -47,21 +54,25 @@ const start = function () {
                                 "Add employee",
                             ]
                         })
+
+                        //depending on the choice which function will run 
                         .then(function (response) {
                             switch (response.add) {
+                                //which add function will run
                                 case "Add department":
-                                    addDepartment();
+                                    addDept();
                                     break;
                                 case "Add role":
                                     addRole();
                                     break;
                                 case "Add employee":
-                                    addEmployee();
+                                    addEmp();
                                     break;
                             }
                         });
                     break;
 
+                    //if view is chosen 
                 case "View  departments, roles, or employees":
                     inquirer
                         .prompt({
@@ -75,21 +86,25 @@ const start = function () {
                             name: "view",
 
                         })
+
+                        //depending on the choice which function will run 
                         .then(function (response) {
                             switch (response.view) {
+                                //which view function will run
                                 case "View department":
-                                    viewDepartment();
+                                    viewDept();
                                     break;
                                 case "View role":
                                     viewRole();
                                     break;
                                 case "View employee":
-                                    viewEmployee();
+                                    vieEmp();
                                     break;
                             }
                         });
                     break;
 
+                    //if update is chosen
                 case "Update departments, roles, or employees":
                     inquirer
                         .prompt({
@@ -102,16 +117,19 @@ const start = function () {
                                 "Update employee",
                             ]
                         })
+
+                        //depending on the choice which function will run 
                         .then(function (response) {
                             switch (response.update) {
+                                //which update function will run 
                                 case "Update department":
-                                    updateDepartment();
+                                    updateDept();
                                     break;
                                 case "Update role":
                                     updateRole();
                                     break;
                                 case "Update employee":
-                                    updateEmployee();
+                                    updateEmp();
                                     break;
                             }
                         });
@@ -122,13 +140,18 @@ const start = function () {
 }
 
 
-function addDepartment() {
-    inquirer
-        .prompt({
+
+//* ADD FUNCTIONS */
+
+//function that adds NEW department information
+function addDept() {
+    //new department name 
+    inquirer.prompt({
             name: "departmentAdd",
             type: "input",
             message: "Please enter the new department.",
         })
+        //then insert that name to the sql 
         .then(function (response) {
             var query = "INSERT INTO department SET ?";
             console.log(response.departmentAdd);
@@ -137,7 +160,7 @@ function addDepartment() {
             }, function (err, res) {
                 if (err) throw err;
 
-                //allow user to run another search if they want
+                //after they have added new information start over or stop 
                 inquirer.prompt({
                         name: "returnToStart",
                         type: "confirm",
@@ -156,9 +179,10 @@ function addDepartment() {
         })
 };
 
-
-
+//function that adds NEW role information
 function addRole() {
+
+    //collect information for new role 
     inquirer.prompt([{
                 type: "input",
                 message: "Please enter the name of the new role.",
@@ -179,6 +203,7 @@ function addRole() {
             }
         ])
         .then(function (response) {
+            //insert new role into database 
             connection.query("INSERT INTO role SET ?", {
                     title: response.Title,
                     salary: response.Salary,
@@ -188,6 +213,7 @@ function addRole() {
                     if (err) throw err;
                     console.log(res.affectedRows + " role added!")
 
+                    //after they have added new information start over or stop 
                     inquirer.prompt({
                             name: "returnToStart",
                             type: "confirm",
@@ -206,9 +232,11 @@ function addRole() {
         })
 }
 
-function addEmployee() {
-    inquirer
-        .prompt([{
+//function that adds NEW employee information
+function addEmp() {
+
+    //prompts for new employee information 
+    inquirer.prompt([{
                 type: "input",
                 message: "Please enter new employee's first name",
                 name: "first_name",
@@ -232,6 +260,8 @@ function addEmployee() {
 
             }
         ])
+
+        //add information for new employee into database 
         .then(function (response) {
             var query = "INSERT INTO employee SET ?";
             connection.query(query, {
@@ -243,6 +273,7 @@ function addEmployee() {
                 function (err, res) {
                     if (err) throw err;
 
+                    //after they have added new information start over or stop
                     inquirer.prompt({
                             name: "returnToStart",
                             type: "confirm",
@@ -261,19 +292,17 @@ function addEmployee() {
         })
 }
 
-function viewDepartment() {
+//* VIEW FUNCTIONS */
+
+//function that displays department info in a table using console table
+function viewDept() {
     var query = "SELECT id, name FROM department";
     connection.query(query, function (err, res) {
-        var tableObj = [];
-        for (var i = 0; i < res.length; i++) {
-            tableObj.push({
-                ID: res[i].id,
-                Name: res[i].name
-            });
-        };
 
-        console.log(cTable.getTable(tableObj));
+        //display the databases information using console.table
+        console.table(res)
 
+        //after they have added new information start over or stop
         inquirer.prompt({
                 name: "returnToStart",
                 type: "confirm",
@@ -291,21 +320,15 @@ function viewDepartment() {
     });
 }
 
+//function that displays role info in a table using console table
 function viewRole() {
     var query = "SELECT id, title, salary, department_id FROM role";
     connection.query(query, function (err, res) {
-        var tableObj = [];
-        for (var i = 0; i < res.length; i++) {
-            tableObj.push({
-                ID: res[i].id,
-                Title: res[i].title,
-                Salary: res[i].salary,
-                Department: res[i].department_id
-            });
-        }
 
-        console.log(cTable.getTable(tableObj));
+        //display the databases information using console.table
+        console.table(res);
 
+        //after they have added new information start over or stop
         inquirer.prompt({
                 name: "returnToStart",
                 type: "confirm",
@@ -323,23 +346,17 @@ function viewRole() {
     });
 }
 
-function viewEmployee() {
+//function that displays employee info in a table using console table
+function vieEmp() {
 
     var query = "SELECT id, first_name, last_name, role_id, manager_id FROM employee";
-    tableObj = [];
+
     connection.query(query, function (err, res) {
-        for (var i = 0; i < res.length; i++) {
-            tableObj.push({
-                ID: res[i].id,
-                First_name: res[i].first_name,
-                Last_name: res[i].last_name,
-                Role: res[i].role_id,
-                Manager: res[i].manager_id
-            });
-        }
 
-        console.log(cTable.getTable(tableObj));
+        //display the databases information using console.table
+        console.table(res);
 
+        //after they have added new information start over or stop
         inquirer.prompt({
                 name: "returnToStart",
                 type: "confirm",
@@ -357,7 +374,12 @@ function viewEmployee() {
     });
 }
 
-function updateDepartment() {
+//* UPDATE FUNCTIONS */
+
+//function that updates an existing department 
+function updateDept() {
+
+    //prompts to get info for updating a department
     inquirer.prompt([{
                 name: "departmentUpdate",
                 type: "input",
@@ -370,6 +392,7 @@ function updateDepartment() {
             }
         ])
         .then(function (response) {
+            //changing department info in database 
             var query = "UPDATE department SET ? WHERE ?";
             console.log(response.departmentAdd);
             connection.query(query, [{
@@ -380,8 +403,8 @@ function updateDepartment() {
                 }
             ], function (err, res) {
                 if (err) throw err;
-                console.log(res.affectedRows + " department updated!")
 
+                //after they have added new information start over or stop
                 inquirer.prompt({
                         name: "returnToStart",
                         type: "confirm",
@@ -400,13 +423,17 @@ function updateDepartment() {
         })
 }
 
+//function that updates an existing role 
 function updateRole() {
+    //adding prompts for updating role 
     inquirer.prompt([{
                 name: "roleUpdate",
                 type: "input",
                 message: "Please enter the role you wish to update.",
             },
             {
+
+                //which information is being updated 
                 name: "roleField",
                 type: "rawlist",
                 message: "Which field needs updating?",
@@ -419,10 +446,13 @@ function updateRole() {
             }
         ])
         .then(function (response) {
+            //updating role in database 
             console.log(response.roleField)
             var query = "UPDATE role SET ? WHERE ?";
             switch (response.roleField) {
                 case "title":
+
+                    //updating title 
                     connection.query(query, [{
                             title: response.roleNew
                         },
@@ -431,11 +461,14 @@ function updateRole() {
                         }
                     ], function (err, res) {
                         if (err) throw err;
-                        console.log(res.affectedRows + " role updated!")
+
                     });
                     break;
 
+
                 case "salary":
+
+                    //updating salary information
                     connection.query(query, [{
                             salary: response.roleNew
                         },
@@ -444,11 +477,13 @@ function updateRole() {
                         }
                     ], function (err, res) {
                         if (err) throw err;
-                        console.log(res.affectedRows + " role updated!")
+
                     });
                     break;
 
                 case "department_id":
+
+                    //updating department info
                     connection.query(query, [{
                             department_id: response.roleNew
                         },
@@ -462,6 +497,7 @@ function updateRole() {
                     break;
             }
 
+            //after they have added new information start over or stop
             inquirer.prompt({
                     name: "returnToStart",
                     type: "confirm",
@@ -479,13 +515,17 @@ function updateRole() {
         });
 }
 
-function updateEmployee() {
+//function that updates an existing employee 
+function updateEmp() {
+
+    //prompts to update an employee 
     inquirer.prompt([{
                 name: "employeeUpdate",
                 type: "input",
                 message: "Please enter the employee_id you wish to update.",
             },
             {
+                //which field is being updated 
                 name: "employeeField",
                 type: "rawlist",
                 message: "Which field needs updating?",
@@ -499,6 +539,7 @@ function updateEmployee() {
         ])
         .then(function (response) {
             console.log(response.employeeField)
+            //adding updated information to the database 
             var query = "UPDATE employee SET ? WHERE ?";
             switch (response.employeeField) {
                 case "first_name":
@@ -554,6 +595,7 @@ function updateEmployee() {
                     break;
             }
 
+            //after they have added new information start over or stop
             inquirer.prompt({
                     name: "returnToStart",
                     type: "confirm",
@@ -568,5 +610,5 @@ function updateEmployee() {
                     }
 
                 })
-        });
+        })
 }
