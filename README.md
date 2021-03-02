@@ -16,8 +16,10 @@ Link to github repo: (https://github.com/wtekverk/Eployee_Track_and_Change)
   
   [Usage](##Usage)
   
+  [Contributions](##Contributions)
+
   [License](##License)
-  
+
   [Questions](##Questions)
   
   
@@ -25,8 +27,12 @@ Link to github repo: (https://github.com/wtekverk/Eployee_Track_and_Change)
 This is not a deployed side to in order to run this application it will need to be forked from the origional github repo. The user will have to run `npm i` to initialize all of the needed packages and lastly the user will need to run the sql files within their workbench. Once that is done the user only has to type `node server.js` into the terminal to start the application. 
 
 ## Usage
-To use this application the user must navigate to the site then input a title and a note and simply press save. 
+Once this application is installed correctly the user starts the program by entering the terminal command `node server.js`. I have attached a demonstration below. 
 
+Demo(https://drive.google.com/file/d/1JBR7-YhLcB3SivxvN6s_HCVnSGv-dNww/view)
+
+## Contributions 
+For this application I relied heavily on my tutor Kat AND the greatbay activity example. 
 
 ## License
 Copyright (c) 2021 Wendy Tekverk
